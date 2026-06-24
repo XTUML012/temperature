@@ -1,45 +1,36 @@
-// Použijeme čistý globální import, který Netlify Functions v2 umí samy od sebe
-const { getStore } = require("@netlify/blobs");
+import { getStore } from "@netlify/blobs";
 
-exports.handler = async (event, context) => {
-  // Inicializace trvalého úložiště
+export default async (request, context) => {
   const store = getStore("meteo_historie");
   
-  // Načtení historie z disku (pokud neexistuje, začínáme s prázdným polem)
+  // Načtení historie (pokud neexistuje, začínáme s prázdným polem)
   let historie = await store.get("zaznamy", { type: "json" }) || [];
 
-  // 1. PŘÍJEM DAT OD WEMOSU (POST požadavek)
-  if (event.httpMethod === "POST") {
+  // 1. PŘÍJEM DAT OD WEMOSU (POST)
+  if (request.method === "POST") {
     try {
-      const data = JSON.parse(event.body);
+      const data = await request.json();
       
       if (data.temperature !== undefined && data.humidity !== undefined) {
-        // Přidáme nové měření na začátek pole
         historie.unshift({
           temp: parseFloat(data.temperature),
           hum: parseFloat(data.humidity)
         });
 
-        // Držíme v paměti pouze posledních 60 záznamů (1 hodina)
         if (historie.length > 60) {
           historie.pop();
         }
 
-        // Uložíme aktualizované pole zpět do Blobs
         await store.setJSON("zaznamy", historie);
-
-        return {
-          statusCode: 200,
-          body: "Data uspesne ulozena do Netlify Blobs."
-        };
+        return new Response("Data ulozena.", { status: 200 });
       }
-      return { statusCode: 400, body: "Spatny format dat." };
+      return new Response("Spatny format.", { status: 400 });
     } catch (e) {
-      return { statusCode: 500, body: "Chyba serveru pri zpracovani POST." };
+      return new Response("Chyba serveru.", { status: 500 });
     }
   }
 
-  // 2. ZOBRAZENÍ WEBOVKY (GET požadavek)
+  // 2. ZOBRAZENÍ WEBOVKY (GET)
   const aktualni = historie[0] || { temp: "Neznamá", hum: "Neznamá" };
   let srovnavaciZaznam = historie.length >= 60 ? historie[59] : null;
   
@@ -87,9 +78,7 @@ exports.handler = async (event, context) => {
     </html>
   `;
 
-  return {
-    statusCode: 200,
-    headers: { "Content-Type": "text/html; charset=utf-8" },
-    body: html
-  };
+  return new Response(html, {
+    headers: { "content-type": "text/html;charset=UTF-8" },
+  });
 };
