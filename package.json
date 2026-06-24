@@ -1,6 +1,9 @@
 {
+  "name": "teplota-meteo",
+  "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "@netlify/blobs": "^8.0.0"
+    "@netlify/blobs": "^8.0.0",
+    "@netlify/functions": "^2.0.0"
   }
 }
