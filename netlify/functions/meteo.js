@@ -127,7 +127,7 @@ export default async (request, context) => {
 </head>
 <body>
   <div class="card">
-    <h1>Meteostanice — Wemos D1 + SHT3X</h1>
+    <h1>Meteostanice</h1>
     <div class="temp">${tempText}</div>
     <div class="hum">💧 ${humText}</div>
     ${trendHtml}
@@ -150,3 +150,4 @@ export const config = {
   path: ["/", "/meteo"],
   method: ["GET", "POST"],
 };
+
