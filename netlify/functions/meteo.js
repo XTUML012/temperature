@@ -87,3 +87,4 @@ export default async (request, context) => {
     headers: { "content-type": "text/html;charset=UTF-8" },
   });
 };
+export const config = { path: "/" };
