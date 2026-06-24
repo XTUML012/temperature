@@ -1,4 +1,0 @@
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/meteo"
-  status = 200
