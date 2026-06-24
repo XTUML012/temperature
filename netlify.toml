@@ -1,0 +1,22 @@
+[build]
+  # Netlify musí vědět, kde je projekt (pokud je v podsložce repozitáře)
+  # Pokud je repozitář kořen = složka "temperature", zakomentuj base:
+  # base = "temperature"
+  publish = "public"
+  command = "mkdir -p public"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Přesměrování: GET / → funkce meteo (zobrazí HTML kartu)
+[[redirects]]
+  from = "/"
+  to = "/.netlify/functions/meteo"
+  status = 200
+
+# Volitelné: přesměrování všeho ostatního na funkci
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/meteo"
+  status = 200
